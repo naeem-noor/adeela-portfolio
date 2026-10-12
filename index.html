@@ -123,11 +123,33 @@ nav ul a::after{content:"";position:absolute;left:0;right:0;bottom:-2px;height:2
 nav ul a.active{color:var(--brand)}
 nav ul a.active::after{transform:scaleX(1)}
 @media (prefers-reduced-motion:reduce){nav ul a,nav ul a::after{transition:none}}
+.burger{display:none;width:44px;height:44px;border:0;background:transparent;border-radius:12px;cursor:pointer;position:relative;color:var(--ink)}
+.burger span{position:absolute;left:11px;right:11px;height:2px;border-radius:2px;background:currentColor;transition:transform .3s,opacity .2s,top .3s}
+.burger span:nth-child(1){top:14px}.burger span:nth-child(2){top:21px}.burger span:nth-child(3){top:28px}
+.burger[aria-expanded=true] span:nth-child(1){top:21px;transform:rotate(45deg)}
+.burger[aria-expanded=true] span:nth-child(2){opacity:0}
+.burger[aria-expanded=true] span:nth-child(3){top:21px;transform:rotate(-45deg)}
+.scrim{display:none}
+@media (max-width:900px){
+.burger{display:block;margin-right:-8px}
+nav .menu{display:flex;position:absolute;top:100%;left:0;right:0;flex-direction:column;gap:0;padding:8px 24px 20px;background:var(--bg);border-bottom:1px solid var(--line);box-shadow:0 24px 40px -24px rgba(6,20,26,.45);max-height:calc(100vh - 70px);max-height:calc(100dvh - 70px);overflow-y:auto;visibility:hidden;opacity:0;transform:translateY(-8px);transition:opacity .25s,transform .25s,visibility 0s .25s}
+nav .menu.open{visibility:visible;opacity:1;transform:none;transition:opacity .25s,transform .25s}
+nav .menu a{display:block;padding:15px 4px;font-size:18px;border-bottom:1px solid var(--line)}
+nav .menu li:last-child a{border-bottom:0}
+nav .menu a::after{display:none}
+nav .menu a.active{color:var(--brand);font-weight:600}
+.scrim{display:block;position:fixed;inset:0;z-index:9;background:rgba(6,20,26,.45);opacity:0;visibility:hidden;transition:opacity .25s,visibility 0s .25s}
+.scrim.show{opacity:1;visibility:visible;transition:opacity .25s}
+}
+@media (max-width:480px){.wrap{padding:0 18px}nav .menu{padding:8px 18px 18px}.hero h1{font-size:40px}}
+@media (prefers-reduced-motion:reduce){.burger span,nav .menu,.scrim{transition:none!important}}
 </style>
 </head>
 <body>
 <nav><div class="wrap"><a class="logo" href="#top">Adeela Noor</a>
-<ul><li><a href="#about">About</a></li><li><a href="#body">Explore</a></li><li><a href="#education">Education</a></li><li><a href="#focus">Focus areas</a></li><li><a href="#approach">Approach</a></li><li><a href="#contact">Contact</a></li></ul></div></nav>
+<button class="burger" id="burger" aria-label="Open menu" aria-expanded="false" aria-controls="menu"><span></span><span></span><span></span></button>
+<ul class="menu" id="menu"><li><a href="#about">About</a></li><li><a href="#body">Explore</a></li><li><a href="#education">Education</a></li><li><a href="#focus">Focus areas</a></li><li><a href="#approach">Approach</a></li><li><a href="#contact">Contact</a></li></ul></div></nav>
+<div class="scrim" id="scrim"></div>
 
 <header class="hero" id="top"><svg class="spine" viewBox="0 0 200 600" aria-hidden="true"><g id="vb"></g></svg><div class="wrap">
 <div>
@@ -269,6 +291,14 @@ secs.forEach(function(s,i){if(s.getBoundingClientRect().top<=y)cur=i});
 if(window.innerHeight+window.scrollY>=document.body.scrollHeight-4)cur=secs.length-1;
 links.forEach(function(l,i){var on=i===cur;l.classList.toggle('active',on);if(on)l.setAttribute('aria-current','true');else l.removeAttribute('aria-current')})}
 window.addEventListener('scroll',spy,{passive:true});window.addEventListener('resize',spy);spy();
+})();
+(function(){var b=document.getElementById('burger'),m=document.getElementById('menu'),sc=document.getElementById('scrim');
+function set(o){m.classList.toggle('open',o);sc.classList.toggle('show',o);b.setAttribute('aria-expanded',o);b.setAttribute('aria-label',o?'Close menu':'Open menu')}
+b.addEventListener('click',function(){set(!m.classList.contains('open'))});
+sc.addEventListener('click',function(){set(false)});
+m.addEventListener('click',function(e){if(e.target.closest('a'))set(false)});
+document.addEventListener('keydown',function(e){if(e.key==='Escape'&&m.classList.contains('open')){set(false);b.focus()}});
+window.addEventListener('resize',function(){if(window.innerWidth>900)set(false)});
 })();
 </script>
 </body>
